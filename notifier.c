@@ -75,7 +75,7 @@ void check_blocks(struct notifier_block *nblock){
 #if DEBUG
 		printk(KERN_INFO"KEROKID: --> current block in chain: %lx \n",(unsigned long)current_block);
 #endif
-		analyze_address((psize*)nblock->notifier_call);
+		analyze_address((psize*)current_block->notifier_call);
 		current_block = current_block->next;
 	}
 }
