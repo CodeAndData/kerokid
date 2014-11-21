@@ -22,7 +22,7 @@ make linux-x86                                // for i386
 make linux-x86_64                             // for amd64
 make linux-x86 DEBUG=y                        // or
 make linux-x86_64 DEBUG=y                     // for debugging
-sudo insmod inkerokid.ko
+sudo insmod kerokid.ko
 dmesg                                         // to see results
  
 features:
