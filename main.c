@@ -14,9 +14,11 @@
 #include "addressAnalysis.h"
 #include "inlineHooks.h"
 #include "notifier.h"
-#if defined(_CONFIG_X86_)
+
+//deactivated memory forensics temporarily until memory problems are fixed
+/*#if defined(_CONFIG_X86_)
 #include "memory.h"
-#endif
+#endif*/
 
 // -------- storage for global variables --------------
 psize **syscallTable;
@@ -62,10 +64,10 @@ int init_module(void)
 	printk(KERN_INFO"KEROKID: Check notifier_subscriptions...\n");
 	check_notifier_subscriptions();
 
-#if defined(_CONFIG_X86_)
+/*#if defined(_CONFIG_X86_)
 	printk(KERN_INFO"KEROKID: Look for indicators of hidden modules in memory...\n");
 	check_memory();
-#endif
+#endif*/
 
 	return 0;
 }
