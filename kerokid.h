@@ -20,7 +20,7 @@
 #define DEBUG 0
 #endif
 
-#define NUMBER_OF_SYSCALLS 326
+#define NUMBER_OF_SYSCALLS 300
 
 // -------- define architecture specific stuff --------
 #if defined(_CONFIG_X86_)
