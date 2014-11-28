@@ -16,6 +16,25 @@ features
 - detects syscall table entries directing to module space: determines if module is present at destination or not
 - detects inline hooking of syscall table entries: determines if module is present at destination or not
 - detects notifier entries to module space: detects module structure of hidden modules in memory [in progress]
+
+sample dmesg output:
+----------------------
+manipulated syscall table
+```
+[  421.296881] KEROKID: Started
+[  421.302176] KEROKID: Check for syscall table hooks...
+[  421.302176] KEROKID: ALERT: Jump to hidden module: ffffffffa0002010 
+[  421.302176] KEROKID: ALERT: Jump to hidden module: ffffffffa0002050 
+[  421.302176] KEROKID: ALERT: Jump to hidden module: ffffffffa0002020 
+[  421.302176] KEROKID: ALERT: Jump to hidden module: ffffffffa0002040 
+[  421.302176] KEROKID: ALERT: Jump to hidden module: ffffffffa0002000 
+[  421.302176] KEROKID: Check for inline hooks...
+[  421.304729] KEROKID: Check notifier_subscriptions...
+[  421.304729] KEROKID: -> Check keyboard notifier chain... 
+[  421.308363] KEROKID: -> Check module notifier chain... 
+[  421.308363] KEROKID: -> Check netdevice notifier chain... 
+[  421.308363] KEROKID: -> Check netevent notifier chain... 
+```
  
 successfully tested with
 ----------------------
