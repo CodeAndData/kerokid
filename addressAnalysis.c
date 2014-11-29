@@ -33,20 +33,20 @@ int address_is_part_of_module(psize *addr){
 	int i;
 	for (i=0; i < numberOfUnhiddenModules; i++){
 		if (call_to_address_in_space(startOf(unhiddenModules[i]),endOf(unhiddenModules[i]),(psize)addr)){
-			printk(KERN_ALERT"KEROKID: WARNING: Jump to module: %lx \n",(unsigned long)addr);
-			print_module_info(unhiddenModules[i]);
-			return 1;
+			return i+1;
 		}
 	}
 	return 0;
 }
 
-// ---- main function ----
-
 void analyze_address(psize *addr){
 	if (address_is_part_of_moduleSpace(addr)){
-		if (!address_is_part_of_module(addr)){
+		const int part_of_module = address_is_part_of_module(addr);
+		if (!part_of_module){
 			printk(KERN_ALERT"KEROKID: ALERT: Jump to hidden module: %lx \n",(unsigned long)addr);
+		} else {
+			printk(KERN_ALERT"KEROKID: WARNING: Jump to module: %lx \n",(unsigned long)addr);
+			print_module_info(unhiddenModules[part_of_module-1]);
 		}
 	}
 #if defined(_CONFIG_X86_64_)
