@@ -10,6 +10,7 @@
 #include "kerokid.h"
 #include "addressAnalysis.h"
 #include <linux/netdevice.h>
+#include <linux/inetdevice.h>
 #include <net/netevent.h>
 #include <linux/dca.h>
 #include <linux/usb.h>
@@ -36,7 +37,7 @@ struct notifier_functions init_a_notifier(char* name,int(*registerFunction)(stru
 
 
 void init_notifiers(void){
-	numberOfInterestingNotifiers = 4;	// increase this number if you add a notifier
+	numberOfInterestingNotifiers = 7;	// increase this number if you add a notifier
 	interestingNotifiers = vmalloc(numberOfInterestingNotifiers * sizeof(struct notifier_functions));
 
 // ----- add new notifiers here -----
@@ -45,10 +46,10 @@ void init_notifiers(void){
 	interestingNotifiers[1]= init_a_notifier("module",&register_module_notifier,&unregister_module_notifier);
 	interestingNotifiers[2]= init_a_notifier("netdevice",&register_netdevice_notifier,&unregister_netdevice_notifier);
 	interestingNotifiers[3]= init_a_notifier("netevent",&register_netevent_notifier,&unregister_netevent_notifier);
-
-	//currently not working due to incompatible function signature
-	//interestingNotifiers[4]= init_a_notifier("dca",&dca_register_notify,&dca_unregister_notify);
-	//interestingNotifiers[5]= init_a_notifier("usb",&usb_register_notify,&usb_unregister_notify);
+	interestingNotifiers[4]= init_a_notifier("inetaddress",&register_inetaddr_notifier,&unregister_inetaddr_notifier);
+	interestingNotifiers[5]= init_a_notifier("netlink",&netlink_register_notifier,&netlink_unregister_notifier);
+	interestingNotifiers[6]= init_a_notifier("usb",(int (*)(struct notifier_block *))&usb_register_notify,
+											(int (*)(struct notifier_block *))&usb_unregister_notify);
 }
 
 int blank(struct notifier_block *nblock, unsigned long code, void *param)
