@@ -26,14 +26,12 @@
 
 // -------- define architecture specific stuff --------
 #if defined(_CONFIG_X86_)
-#define KERNEL_SPACE_START 0xc0000000
 #define SPACE_WITH_SCT_START 0xc0000000
 #define SPACE_WITH_SCT_END 0xd0000000
 typedef unsigned int psize;
 #endif
 
 #if defined(_CONFIG_X86_64_)
-#define KERNEL_SPACE_START 0xffffffff80000000
 #define SPACE_WITH_SCT_START 0xffffffff81000000
 #define SPACE_WITH_SCT_END 0xffffffffa2000000
 typedef unsigned long psize;
