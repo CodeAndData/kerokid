@@ -10,6 +10,8 @@
 #include <linux/list.h>
 #include <linux/vmalloc.h>
 #include <linux/syscalls.h>
+#include <asm/asm-offsets.h>
+#include <linux/version.h>
 
 #ifndef KEROKID_H_
 #define KEROKID_H_
@@ -20,16 +22,18 @@
 #define DEBUG 0
 #endif
 
-#define NUMBER_OF_SYSCALLS 300
+#define NUMBER_OF_SYSCALLS __NR_syscall_max
 
 // -------- define architecture specific stuff --------
 #if defined(_CONFIG_X86_)
+#define KERNEL_SPACE_START 0xc0000000
 #define SPACE_WITH_SCT_START 0xc0000000
 #define SPACE_WITH_SCT_END 0xd0000000
 typedef unsigned int psize;
 #endif
 
 #if defined(_CONFIG_X86_64_)
+#define KERNEL_SPACE_START 0xffffffff80000000
 #define SPACE_WITH_SCT_START 0xffffffff81000000
 #define SPACE_WITH_SCT_END 0xffffffffa2000000
 typedef unsigned long psize;
