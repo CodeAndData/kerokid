@@ -10,8 +10,10 @@
 #include <linux/list.h>
 #include <linux/vmalloc.h>
 #include <linux/syscalls.h>
-#include <asm/asm-offsets.h>
 #include <linux/version.h>
+#include <asm/asm-offsets.h>
+#include <asm/unistd.h>
+
 
 #ifndef KEROKID_H_
 #define KEROKID_H_
@@ -22,7 +24,7 @@
 #define DEBUG 0
 #endif
 
-#define NUMBER_OF_SYSCALLS __NR_syscall_max
+#define NUMBER_OF_SYSCALLS NR_syscalls
 
 // -------- define architecture specific stuff --------
 #if defined(_CONFIG_X86_)
