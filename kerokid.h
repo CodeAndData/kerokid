@@ -10,7 +10,6 @@
 #include <linux/list.h>
 #include <linux/vmalloc.h>
 #include <linux/syscalls.h>
-#include <linux/version.h>
 #include <asm/asm-offsets.h>
 #include <asm/unistd.h>
 
@@ -39,11 +38,20 @@ typedef unsigned int psize;
 typedef unsigned long psize;
 #endif
 
+/* -------- global variables ------- */
+struct findings_counter{
+	int inlineHooks, notifiers, syscalls;
+};
+
+extern struct findings_counter finds;
 
 // -------- common functions -------
+psize startOf(struct module *mod);
+psize endOf(struct module *mod);
 void alloc_memory_for(unsigned int quantity,char **something);
 void get_list_of_unhidden_modules(void);
 void print_module_info(struct module *mod);
+char *get_module_info(struct module *mod);
 void print_unhidden_modules(void);
 psize startOf(struct module *mod);
 psize endOf(struct module *mod);

@@ -7,6 +7,7 @@
 #include "syscallTable.h"
 #include "kerokid.h"
 #include "addressAnalysis.h"
+#include "proc_file.h"
 
 // -------- global variables --------------
 psize **syscallTable;
@@ -33,9 +34,13 @@ psize** get_systemcall_table(void){
 
 void check_syscall_table(void){
 	int i;
+	cat_proc_message("syscall table:\n");
 	for (i=0; i < NUMBER_OF_SYSCALLS; i++){
-		analyze_address(syscallTable[i]);
+		if (analyze_address(syscallTable[i]))
+			finds.syscalls++;
 	}
+	if (!finds.syscalls)
+		cat_proc_message("nothing found\n");
 	return;
 }
 

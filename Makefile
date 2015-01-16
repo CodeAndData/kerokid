@@ -1,6 +1,6 @@
 KDIR = /lib/modules/$(shell uname -r)/build
 obj-m += kerokid.o
-kerokid-objs := main.o common.o addressAnalysis.o inlineHooks.o notifier.o syscallTable.o
+kerokid-objs := main.o common.o addressAnalysis.o inlineHooks.o notifier.o syscallTable.o proc_file.o
 
 ifdef DEBUG
 	EFLAGS += -D_CONFIG_DEBUG_

@@ -6,20 +6,23 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-#include <linux/kallsyms.h>
 #include <linux/list.h>
 #include <linux/vmalloc.h>
-#include <linux/syscalls.h>
+
 #include "kerokid.h"
 #include "addressAnalysis.h"
 #include "inlineHooks.h"
 #include "notifier.h"
+#include "proc_file.h"
 #include "syscallTable.h"
 
 //deactivated memory forensics temporarily until memory problems are fixed
 /*#if defined(_CONFIG_X86_)
 #include "memory.h"
 #endif*/
+
+/* -------- storage for global variables -------------- */
+struct findings_counter finds;
 
 // -------------- MODULE INIT and CLEANUP -------------
 int init_module(void)
@@ -28,7 +31,6 @@ int init_module(void)
 	init_common();
 
 	printk(KERN_INFO"KEROKID: Check for syscall table hooks...\n");
-	init_systemcall_table();
 	check_syscall_table();
 
 	printk(KERN_INFO"KEROKID: Check for inline hooks...\n");

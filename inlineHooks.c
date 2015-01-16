@@ -9,6 +9,7 @@
 #include "kerokid.h"
 #include "inlineHooks.h"
 #include "addressAnalysis.h"
+#include "proc_file.h"
 
 struct inlineHook init_hook(unsigned int codeSize, unsigned int addressOffset, char* hookCode);
 
@@ -89,8 +90,10 @@ int check_for_hooks(psize *addr){
 	int i;
 	for (i=0; i < numberOfKnownInlineHooks; i++ ){
 		hookAddress = check_hook(addr,hooks[i]);
-		if (hookAddress != NULL){
+		if (hookAddress != NULL) {
+			cat_proc_message(formats("found hook #%d leading to address %p\n", i, hookAddress));
 			analyze_address(hookAddress);
+			finds.inlineHooks++;
 		}
 	}
 	return 0;
@@ -101,8 +104,11 @@ int check_for_hooks(psize *addr){
 void check_inline_hooks(psize **Table){
 	int i;
 	init_hooks();
+	cat_proc_message("inline hooks:\n");
 	for (i = 0; i < NUMBER_OF_SYSCALLS; i++){
 		check_for_hooks(Table[i]);
 	}
+	if (!finds.inlineHooks)
+		cat_proc_message("nothing found\n");
 	return;
 }

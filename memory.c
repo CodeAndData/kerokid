@@ -6,9 +6,6 @@
  * This file contains stuff to analyze memory
  */
 
-#include "kerokid.h"
-#include "addressAnalysis.h"
-#include "memory.h"
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <asm/page.h>
@@ -16,6 +13,12 @@
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/spinlock_types.h>
+
+#include "kerokid.h"
+#include "addressAnalysis.h"
+#include "memory.h"
+#include "proc_file.h"
+
 
 DEFINE_SPINLOCK(vmap_area_lock);
 
@@ -60,6 +63,19 @@ void get_VMAs(void)
 	number_of_vm_areas = get_number_of_vm_areas_without_IOremapping();
  	alloc_memory_for(number_of_vm_areas,(char**)&vm_area);
  	store_vm_areas_without_IOremapping_to_list();
+}
+
+void memory_proc(char buf[], unsigned int buf_size)
+{
+	unsigned int i;
+	if (VMAP_AREA_LIST != 0)
+		get_VMAs();
+	for (i=0; i < number_of_vm_areas; i++) {
+		if (concatenate_if_not_too_long(buf, formats("vm_struct %u %lu %lx\n", i, vm_area[i]->size, (unsigned long)vm_area[i]->addr), buf_size)) {
+			printk(KERN_ALERT "KEROKID: Error: memory proc message too short (for memory)\n");
+			break;
+		}
+	}
 }
 
 void check_memory(void){

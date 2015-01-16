@@ -22,7 +22,7 @@
 #endif
 
 // ------ exported functions --------
-
-void analyze_address(psize *addr);
+char *get_unhidden_module_info(void);
+int analyze_address(psize *addr);
 
 #endif /* ADDRESSANALYSIS_H_ */

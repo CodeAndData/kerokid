@@ -7,15 +7,19 @@
  */
 
 #include <linux/keyboard.h>
+#include <linux/netdevice.h>
+#include <net/netevent.h>
+#include <linux/usb.h>
+#include <linux/inetdevice.h>
+#include <linux/netlink.h>
+
 #include "kerokid.h"
 #include "addressAnalysis.h"
-#include <linux/netdevice.h>
-#include <linux/inetdevice.h>
-#include <net/netevent.h>
-#include <linux/dca.h>
-#include <linux/usb.h>
+#include "proc_file.h"
+
 
 #define MAX_NOTIFIER_NAME_LENGTH 20
+#define NUMBER_OF_NOTIFIERS 7
 
 struct notifier_functions{
 	char name[MAX_NOTIFIER_NAME_LENGTH];
@@ -25,6 +29,9 @@ struct notifier_functions{
 
 int numberOfInterestingNotifiers;
 struct notifier_functions *interestingNotifiers;
+char notifier_proc_message[NUMBER_OF_NOTIFIERS][MAX_PROC_MESSAGE_LEN];
+char *current_notifier;
+
 
 struct notifier_functions init_a_notifier(char* name,int(*registerFunction)(struct notifier_block*),int(*unregisterFunction)(struct notifier_block*) ){
 		struct notifier_functions n = {
@@ -70,25 +77,46 @@ void notifier_clean(struct notifier_functions n){
 	n.unregisterFunction(&nb);
 }
 
-void check_blocks(struct notifier_block *nblock){
+void check_blocks(struct notifier_block *nblock, int i){
 	struct notifier_block *current_block = nblock;
-	while (current_block != NULL){
+	int code, block_nr = 0;
+	if (current_block == NULL)
+		concatenate_if_not_too_long(notifier_proc_message[i], formats("proc chain is empty\n"), MAX_PROC_MESSAGE_LEN);
+	while (current_block != NULL) {
+		block_nr++;
 #if DEBUG
 		printk(KERN_INFO"KEROKID: --> current block in chain: %lx \n",(unsigned long)current_block);
 #endif
-		analyze_address((psize*)current_block->notifier_call);
+		code = analyze_address((psize*)current_block->notifier_call);
+		if (code == 0) {
+			concatenate_if_not_too_long(notifier_proc_message[i], formats("nothing found in block %d\n", block_nr), MAX_PROC_MESSAGE_LEN);
+		} else {
+			concatenate_if_not_too_long(notifier_proc_message[i], formats("found jump in block %d to module:\n", block_nr), MAX_PROC_MESSAGE_LEN);
+			concatenate_if_not_too_long(notifier_proc_message[i], get_unhidden_module_info(), MAX_PROC_MESSAGE_LEN);
+			finds.notifiers++;
+		}
 		current_block = current_block->next;
 	}
 }
 
 void check_notifier_subscriptions(void){
 	int i;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+	struct proc_dir_entry* notifier_proc_folder = create_proc_folder("notifiers", get_proc_parent());
+	cat_proc_message("notifiers:\n");
+#endif
 	init_notifiers();
 	for (i = 0; i < numberOfInterestingNotifiers; i++){
-		printk(KERN_INFO"KEROKID: -> Check %s notifier chain... \n",interestingNotifiers[i].name);
+		current_notifier = interestingNotifiers[i].name;
+		printk(KERN_INFO"KEROKID: -> Check %s notifier chain... \n", current_notifier);
 		notifier_init(interestingNotifiers[i]);
-		check_blocks(nb.next);
+		check_blocks(nb.next, i);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+		create_proc_file_with_data(current_notifier, notifier_proc_folder, notifier_proc_message[i]);
+#endif
 		notifier_clean(interestingNotifiers[i]);
 	}
+	if (!finds.notifiers)
+			cat_proc_message("nothing found\n");
 	return;
 }
