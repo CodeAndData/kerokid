@@ -22,27 +22,30 @@ extern char *current_notifier;
 char unhiddenmoduleinfo[MAX_MODULE_INFO_LEN];
 
 
-int call_to_address_in_space(psize begin, psize end, psize call){
+int call_to_address_in_space(psize begin, psize end, psize call)
+{
 	if (begin <= call && call <= end)
 		return 1;
 	else
 		return 0;
 }
 
-int address_is_part_of_moduleSpace(psize *addr){
-	return call_to_address_in_space(MODULE_MAPPING_SPACE_START,MODULE_MAPPING_SPACE_END,(psize)addr);
+int address_is_part_of_moduleSpace(psize *addr)
+{
+	return call_to_address_in_space(MODULE_MAPPING_SPACE_START, MODULE_MAPPING_SPACE_END, (psize)addr);
 }
 
-int address_is_part_of_vmalloc(psize *addr){
-	return call_to_address_in_space(VMALLOC_START,VMALLOC_START,(psize)addr);
+int address_is_part_of_vmalloc(psize *addr)
+{
+	return call_to_address_in_space(VMALLOC_START, VMALLOC_START, (psize)addr);
 }
 
-int address_is_part_of_module(psize *addr){
+int address_is_part_of_module(psize *addr)
+{
 	int i;
-	for (i=0; i < numberOfUnhiddenModules; i++){
-		if (call_to_address_in_space(startOf(unhiddenModules[i]),endOf(unhiddenModules[i]),(psize)addr)){
+	for (i=0; i < numberOfUnhiddenModules; i++) {
+		if (call_to_address_in_space(startOf(unhiddenModules[i]), endOf(unhiddenModules[i]), (psize)addr))
 			return i+1;
-		}
 	}
 	return 0;
 }

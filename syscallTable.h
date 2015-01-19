@@ -10,7 +10,7 @@
 #define SYSCALLTABLE_H_
 
 void init_systemcall_table(void);
-psize** get_systemcall_table(void);
+psize **get_systemcall_table(void);
 void check_syscall_table(void);
 
 #endif /* SYSCALLTABLE_H_ */

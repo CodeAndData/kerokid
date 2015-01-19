@@ -30,15 +30,13 @@ char results_msg[MAX_PROC_MESSAGE_LEN];
 static struct proc_dir_entry *proc_parent_folder;
 
 
-int
-proc_show_data(struct seq_file *m, void *v)
+int proc_show_data(struct seq_file *m, void *v)
 {
 	seq_printf(m, "%s", (char *)m->private);
 	return 0;
 }
 
-int
-proc_open_data(struct inode *inode, struct file *file)
+int proc_open_data(struct inode *inode, struct file *file)
 {
 	char *data;
 	data = PDE_DATA(file_inode(file));
@@ -53,8 +51,7 @@ static const struct file_operations proc_data_fops = {
 		.release	= single_release,
 };
 
-struct proc_dir_entry
-*create_proc_file_with_data(char *name, struct proc_dir_entry *parent, void *data)
+struct proc_dir_entry *create_proc_file_with_data(char *name, struct proc_dir_entry *parent, void *data)
 {
 	struct proc_dir_entry *proc_file;
 	proc_file = proc_create_data(name, 0, parent, &proc_data_fops, data);
@@ -66,16 +63,14 @@ struct proc_dir_entry
 	return proc_file;
 }
 
-struct proc_dir_entry
-*create_proc_folder(char *name, struct proc_dir_entry *parent)
+struct proc_dir_entry *create_proc_folder(char *name, struct proc_dir_entry *parent)
 {
 	struct proc_dir_entry *proc_folder;
 	proc_folder = proc_mkdir(name, parent);
 	return proc_folder;
 }
 
-char
-*get_memory_proc_msg(void)
+char *get_memory_proc_msg(void)
 {
 	int i;
 	static char memory_msg[BUFFER_SIZE];
@@ -101,8 +96,7 @@ char
 	return memory_msg;
 }
 
-int
-init_proc_file(void)
+int init_proc_file(void)
 {
 	struct proc_dir_entry *results_proc, *memory_proc;
 	proc_parent_folder = create_proc_folder(procfs_folder_name, NULL);
@@ -116,27 +110,23 @@ init_proc_file(void)
 	return 0;
 }
 
-void
-proc_cleanup(void)
+void proc_cleanup(void)
 {
 	remove_proc_subtree(procfs_folder_name, NULL);
 }
 
-struct proc_dir_entry
-*get_proc_parent(void)
+struct proc_dir_entry *get_proc_parent(void)
 {
 	return proc_parent_folder;
 }
 #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0) */
 
-void
-cat_proc_message(char *message)
+void cat_proc_message(char *message)
 {
 	concatenate_if_not_too_long(results_msg, message, MAX_PROC_MESSAGE_LEN);
 }
 
-int
-concatenate_if_not_too_long(char *dest, char *source, int maxlen)
+int concatenate_if_not_too_long(char *dest, char *source, int maxlen)
 {
 	if (strlen(dest) + strlen(source) < maxlen) {
 		strcat(dest, source);
@@ -147,8 +137,7 @@ concatenate_if_not_too_long(char *dest, char *source, int maxlen)
 	}
 }
 
-char
-*formats(const char* format, ...)
+char *formats(const char* format, ...)
 {
     static char fstr[FORMAT_STR_LEN];
     va_list args;

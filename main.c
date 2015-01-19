@@ -13,10 +13,9 @@
 #include "addressAnalysis.h"
 #include "inlineHooks.h"
 #include "notifier.h"
-#include "proc_file.h"
 #include "syscallTable.h"
 
-//deactivated memory forensics temporarily until memory problems are fixed
+/* deactivated memory forensics temporarily until memory problems are fixed  */
 /*#if defined(_CONFIG_X86_)
 #include "memory.h"
 #endif*/
@@ -24,7 +23,7 @@
 /* -------- storage for global variables -------------- */
 struct findings_counter finds;
 
-// -------------- MODULE INIT and CLEANUP -------------
+/* -------------- MODULE INIT and CLEANUP ------------- */
 int init_module(void)
 {
 	printk(KERN_INFO"KEROKID: Started\n");

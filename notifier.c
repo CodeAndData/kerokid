@@ -33,30 +33,31 @@ char notifier_proc_message[NUMBER_OF_NOTIFIERS][MAX_PROC_MESSAGE_LEN];
 char *current_notifier;
 
 
-struct notifier_functions init_a_notifier(char* name,int(*registerFunction)(struct notifier_block*),int(*unregisterFunction)(struct notifier_block*) ){
+struct notifier_functions init_a_notifier(char *name, int(*registerFunction)(struct notifier_block*),
+		int(*unregisterFunction)(struct notifier_block*))
+{
 		struct notifier_functions n = {
 				.registerFunction = registerFunction,
 				.unregisterFunction = unregisterFunction
 		};
-		memcpy(n.name,name,MAX_NOTIFIER_NAME_LENGTH);
+		memcpy(n.name, name, MAX_NOTIFIER_NAME_LENGTH);
 		return n;
 };
 
-
-void init_notifiers(void){
-	numberOfInterestingNotifiers = 7;	// increase this number if you add a notifier
+void init_notifiers(void)
+{
+	numberOfInterestingNotifiers = 7;	/* increase this number if you add a notifier */
 	interestingNotifiers = vmalloc(numberOfInterestingNotifiers * sizeof(struct notifier_functions));
 
-// ----- add new notifiers here -----
-	//keyboard
-	interestingNotifiers[0]= init_a_notifier("keyboard",&register_keyboard_notifier,&unregister_keyboard_notifier);
-	interestingNotifiers[1]= init_a_notifier("module",&register_module_notifier,&unregister_module_notifier);
-	interestingNotifiers[2]= init_a_notifier("netdevice",&register_netdevice_notifier,&unregister_netdevice_notifier);
-	interestingNotifiers[3]= init_a_notifier("netevent",&register_netevent_notifier,&unregister_netevent_notifier);
-	interestingNotifiers[4]= init_a_notifier("inetaddress",&register_inetaddr_notifier,&unregister_inetaddr_notifier);
-	interestingNotifiers[5]= init_a_notifier("netlink",&netlink_register_notifier,&netlink_unregister_notifier);
-	interestingNotifiers[6]= init_a_notifier("usb",(int (*)(struct notifier_block *))&usb_register_notify,
-											(int (*)(struct notifier_block *))&usb_unregister_notify);
+/* ----- add new notifiers here ----- */
+	interestingNotifiers[0]= init_a_notifier("keyboard", &register_keyboard_notifier, &unregister_keyboard_notifier);
+	interestingNotifiers[1]= init_a_notifier("module", &register_module_notifier, &unregister_module_notifier);
+	interestingNotifiers[2]= init_a_notifier("netdevice", &register_netdevice_notifier, &unregister_netdevice_notifier);
+	interestingNotifiers[3]= init_a_notifier("netevent", &register_netevent_notifier, &unregister_netevent_notifier);
+	interestingNotifiers[4]= init_a_notifier("inetaddress", &register_inetaddr_notifier, &unregister_inetaddr_notifier);
+	interestingNotifiers[5]= init_a_notifier("netlink", &netlink_register_notifier, &netlink_unregister_notifier);
+	interestingNotifiers[6]= init_a_notifier("usb", (int (*)(struct notifier_block *))&usb_register_notify,
+												(int (*)(struct notifier_block *))&usb_unregister_notify);
 }
 
 int blank(struct notifier_block *nblock, unsigned long code, void *param)
@@ -69,11 +70,13 @@ struct notifier_block nb = {
 	.priority = INT_MAX
 };
 
-void notifier_init(struct notifier_functions n){
+void notifier_init(struct notifier_functions n)
+{
 	n.registerFunction(&nb);
 }
 
-void notifier_clean(struct notifier_functions n){
+void notifier_clean(struct notifier_functions n)
+{
 	n.unregisterFunction(&nb);
 }
 
@@ -99,14 +102,15 @@ void check_blocks(struct notifier_block *nblock, int i){
 	}
 }
 
-void check_notifier_subscriptions(void){
+void check_notifier_subscriptions(void)
+{
 	int i;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
 	struct proc_dir_entry* notifier_proc_folder = create_proc_folder("notifiers", get_proc_parent());
 	cat_proc_message("notifiers:\n");
 #endif
 	init_notifiers();
-	for (i = 0; i < numberOfInterestingNotifiers; i++){
+	for (i = 0; i < numberOfInterestingNotifiers; i++) {
 		current_notifier = interestingNotifiers[i].name;
 		printk(KERN_INFO"KEROKID: -> Check %s notifier chain... \n", current_notifier);
 		notifier_init(interestingNotifiers[i]);
@@ -117,6 +121,6 @@ void check_notifier_subscriptions(void){
 		notifier_clean(interestingNotifiers[i]);
 	}
 	if (!finds.notifiers)
-			cat_proc_message("nothing found\n");
+		cat_proc_message("nothing found\n");
 	return;
 }

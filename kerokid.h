@@ -25,7 +25,7 @@
 
 #define NUMBER_OF_SYSCALLS NR_syscalls
 
-// -------- define architecture specific stuff --------
+/* -------- define architecture specific stuff -------- */
 #if defined(_CONFIG_X86_)
 #define SPACE_WITH_SCT_START 0xc0000000
 #define SPACE_WITH_SCT_END 0xd0000000
@@ -45,7 +45,7 @@ struct findings_counter{
 
 extern struct findings_counter finds;
 
-// -------- common functions -------
+/* -------- common functions ------- */
 psize startOf(struct module *mod);
 psize endOf(struct module *mod);
 void alloc_memory_for(unsigned int quantity,char **something);
