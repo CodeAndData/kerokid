@@ -35,7 +35,17 @@ manipulated syscall table
 [  421.308363] KEROKID: -> Check netdevice notifier chain... 
 [  421.308363] KEROKID: -> Check netevent notifier chain... 
 ```
- 
+
+proc output
+----------------------
+results and further information can be accessed through the KEROKID proc file
+- all files are in the folder /proc/kerokid
+- /proc/kerokid/results contains the results for each area
+- /proc/kerokid/memory lists the addresses of modules, syscalls and allocated memory
+- the folder /proc/kerokid/notifiers contains the results for each notifier chain
+- the folder /proc/kerokid/modules contains information on each module
+Requires Linux Kernel 3.10 or newer
+
 successfully tested with
 ----------------------
 x86
