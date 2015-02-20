@@ -121,6 +121,11 @@ struct proc_dir_entry *get_proc_parent(void)
 }
 #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0) */
 
+void clear_proc_message(void)
+{
+	memset(results_msg, 0, sizeof(results_msg));
+}
+
 void cat_proc_message(char *message)
 {
 	concatenate_if_not_too_long(results_msg, message, MAX_PROC_MESSAGE_LEN);

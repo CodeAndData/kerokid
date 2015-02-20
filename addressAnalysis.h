@@ -1,13 +1,7 @@
-/*
- * The KErnel ROotKIt Detector (KEROKID)
- *
- *      (c) 2014 Fraunhofer FKIE
- */
-
 #include "kerokid.h"
 
-#ifndef ADDRESSANALYSIS_H_
-#define ADDRESSANALYSIS_H_
+#ifndef KEROKID_ADDRESSANALYSIS_H_
+#define KEROKID_ADDRESSANALYSIS_H_
 
 /* -------- define architecture specific stuff -------- */
 #if defined(_CONFIG_X86_)
@@ -22,7 +16,9 @@
 #endif
 
 /* ------ exported functions -------- */
+int address_is_part_of_vmalloc(psize *addr);
+int address_is_part_of_moduleSpace(psize *addr);
 char *get_unhidden_module_info(void);
-int analyze_address(psize *addr);
+int analyze_address(psize *addr, char *source);
 
-#endif /* ADDRESSANALYSIS_H_ */
+#endif /* KEROKID_ADDRESSANALYSIS_H_ */

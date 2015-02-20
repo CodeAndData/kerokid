@@ -1,16 +1,10 @@
-/*
- * The KErnel ROotKIt Detector (KEROKID)
- *
- *      (c) 2014 Fraunhofer FKIE
- */
-
 #include "kerokid.h"
 
-#ifndef SYSCALLTABLE_H_
-#define SYSCALLTABLE_H_
+#ifndef KEROKID_SYSCALLTABLE_H_
+#define KEROKID_SYSCALLTABLE_H_
 
 void init_systemcall_table(void);
 psize **get_systemcall_table(void);
 void check_syscall_table(void);
 
-#endif /* SYSCALLTABLE_H_ */
+#endif /* KEROKID_SYSCALLTABLE_H_ */

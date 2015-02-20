@@ -10,8 +10,8 @@
 #include <linux/list.h>
 #include <linux/vmalloc.h>
 #include <linux/syscalls.h>
-#include <asm/asm-offsets.h>
 #include <asm/unistd.h>
+#include <asm/asm-offsets.h>
 
 
 #ifndef KEROKID_H_
@@ -24,6 +24,7 @@
 #endif
 
 #define NUMBER_OF_SYSCALLS NR_syscalls
+#define MAX_MODULE_NAME_LEN 50
 
 /* -------- define architecture specific stuff -------- */
 #if defined(_CONFIG_X86_)
@@ -53,10 +54,9 @@ void get_list_of_unhidden_modules(void);
 void print_module_info(struct module *mod);
 char *get_module_info(struct module *mod);
 void print_unhidden_modules(void);
-psize startOf(struct module *mod);
-psize endOf(struct module *mod);
 void init_common(void);
 void clean_common(void);
+void refresh_module_info(void);
 
 
 #endif /* KEROKID_H_ */

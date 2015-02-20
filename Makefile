@@ -1,9 +1,13 @@
 KDIR = /lib/modules/$(shell uname -r)/build
 obj-m += kerokid.o
-kerokid-objs := main.o common.o addressAnalysis.o inlineHooks.o notifier.o syscallTable.o proc_file.o
+kerokid-objs := main.o common.o addressAnalysis.o inlineHooks.o notifier.o memory.o proc_file.o syscallTable.o scheduling.o dump.o
 
 ifdef DEBUG
 	EFLAGS += -D_CONFIG_DEBUG_
+endif
+
+ifdef MEMORY
+	EFLAGS += -D_ENABLE_MEMORY_
 endif
 
 default:

@@ -4,12 +4,14 @@
  *      (c) 2014 Fraunhofer FKIE
  */
 
-#ifndef MEMORY_H_
-#define MEMORY_H_
+#include <linux/kallsyms.h>
 
-#define VMAP_AREA_LIST ((struct list_head*) 0xc146c704)  // must be set manually -> system.map
+#ifndef KEROKID_MEMORY_H_
+#define KEROKID_MEMORY_H_
+
+#define VMAP_AREA_LIST ((struct list_head *)kallsyms_lookup_name("vmap_area_list"))
 
 void check_memory(void);
 void memory_proc(char buf[], unsigned int buf_size);
 
-#endif /* MEMORY_H_ */
+#endif /* KEROKID_MEMORY_H_ */

@@ -6,14 +6,19 @@
  * This file contains common functions
  */
 
+#include <linux/proc_fs.h>
+
 #include "kerokid.h"
 #include "proc_file.h"
 #include "syscallTable.h"
 
 
+#define MODULE_PROC_NAME "modules"
+
 struct module **unhiddenModules;
 unsigned int numberOfUnhiddenModules;
 char (*module_proc_message)[MAX_PROC_MESSAGE_LEN];
+struct proc_dir_entry *module_proc_folder;
 
 
 void alloc_memory_for(unsigned int quantity, char **something)
@@ -35,7 +40,6 @@ psize endOf(struct module *mod)
 }
 
 /* ------------ module printing functions -------------------- */
-
 void print_module_info(struct module *mod)
 {
 	printk(KERN_INFO"KEROKID: Name:           %s\n", mod->name);
@@ -84,31 +88,41 @@ void store_known_modules_to_list(void)
 	unsigned int i = 0;
 	if (unhiddenModules != NULL) {
 		list_for_each_entry(m, &THIS_MODULE->list, list) {
-			if (i < numberOfUnhiddenModules) 							/* ignore own module because informations are not valid */
+			if ((char)m->name[0] != '\x01') { /* ignore own module because informations are not valid */
 				unhiddenModules[i] = m;
-			i++;
+				i++;
+			}
 	  	}
 	}
 }
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+void init_module_proc(void)
+{
+	int i;
+	char *module_list = vmalloc(MAX_MODULE_NAME_LEN * numberOfUnhiddenModules * sizeof(char));
+	if (module_proc_folder != NULL)
+		remove_proc_subtree(MODULE_PROC_NAME, get_proc_parent());
+	module_proc_folder = create_proc_folder(MODULE_PROC_NAME, get_proc_parent());
+	for (i=0; i< numberOfUnhiddenModules; i++) {
+		create_proc_file_with_data(unhiddenModules[i]->name, module_proc_folder, module_proc_message[i]);
+		concatenate_if_not_too_long(module_list, formats("%d: %s\n", i+1, unhiddenModules[i]->name), MAX_MODULE_NAME_LEN * numberOfUnhiddenModules);
+	}
+	create_proc_file_with_data("module_list", module_proc_folder, module_list);
+}
+
 void write_proc_module_info(void)
 {
 	int i;
-	struct proc_dir_entry *module_proc_folder;
-	module_proc_folder = create_proc_folder("modules", get_proc_parent());
 	module_proc_message = vmalloc(numberOfUnhiddenModules * sizeof(*module_proc_message));
 	if (module_proc_message == NULL) {
 		printk(KERN_ALERT"KEROKID: ERROR: Could not allocate memory!\n");
 		return;
 	}
 	for (i=0; i< numberOfUnhiddenModules; i++) {
-		if (module_proc_message[i] == NULL)
-			printk(KERN_ALERT"KEROKID: ERROR: Could not allocate memory for entry!\n");
-		else
-			strcpy(module_proc_message[i], get_module_info(unhiddenModules[i]));
-		create_proc_file_with_data(unhiddenModules[i]->name, module_proc_folder, module_proc_message[i]);
+		strcpy(module_proc_message[i], get_module_info(unhiddenModules[i]));
 	}
+	init_module_proc();
 }
 #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0) */
 
@@ -125,9 +139,7 @@ void get_list_of_unhidden_modules(void)
 void init_common(void)
 {
 	get_list_of_unhidden_modules();
-	init_systemcall_table();
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
-	init_proc_file();
 	write_proc_module_info();
 #endif
 }
@@ -136,7 +148,10 @@ void clean_common(void)
 {
 	vfree(unhiddenModules);
 	vfree(module_proc_message);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
-	proc_cleanup();
-#endif
+}
+
+void refresh_module_info(void)
+{
+	clean_common();
+	init_common();
 }

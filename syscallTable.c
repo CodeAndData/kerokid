@@ -9,6 +9,7 @@
 #include "addressAnalysis.h"
 #include "proc_file.h"
 
+
 /* -------- global variables -------------- */
 psize **syscallTable;
 
@@ -40,7 +41,7 @@ void check_syscall_table(void)
 	int i;
 	cat_proc_message("syscall table:\n");
 	for (i=0; i < NUMBER_OF_SYSCALLS; i++) {
-		if (analyze_address(syscallTable[i]))
+		if (analyze_address(syscallTable[i], formats(" from syscall %d", i)))
 			finds.syscalls++;
 	}
 	if (!finds.syscalls)

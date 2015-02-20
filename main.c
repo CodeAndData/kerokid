@@ -14,21 +14,17 @@
 #include "inlineHooks.h"
 #include "notifier.h"
 #include "syscallTable.h"
-
-/* deactivated memory forensics temporarily until memory problems are fixed  */
-/*#if defined(_CONFIG_X86_)
 #include "memory.h"
-#endif*/
+#include "scheduling.h"
+#include "proc_file.h"
+#include "dump.h"
 
 /* -------- storage for global variables -------------- */
 struct findings_counter finds;
 
 /* -------------- MODULE INIT and CLEANUP ------------- */
-int init_module(void)
+void scan(void)
 {
-	printk(KERN_INFO"KEROKID: Started\n");
-	init_common();
-
 	printk(KERN_INFO"KEROKID: Check for syscall table hooks...\n");
 	check_syscall_table();
 
@@ -38,17 +34,35 @@ int init_module(void)
 	printk(KERN_INFO"KEROKID: Check notifier_subscriptions...\n");
 	check_notifier_subscriptions();
 
-/*#if defined(_CONFIG_X86_)
+#if defined(_ENABLE_MEMORY_)
 	printk(KERN_INFO"KEROKID: Look for indicators of hidden modules in memory...\n");
 	check_memory();
-#endif*/
+#endif
+}
 
+int init_module(void)
+{
+	printk(KERN_INFO"KEROKID: Started\n");
+	init_systemcall_table();
+	init_proc_file();
+	init_common();
+	init_dump_proc();
+	init_notifier_check();
+	init_inline_hook_check();
+	init_scheduling();
+
+	scan();
 	return 0;
 }
 
 void cleanup_module(void)
 {
 	clean_common();
+	clean_scheduling();
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+	proc_cleanup();
+	dump_cleanup();
+#endif
 	printk(KERN_INFO"KEROKID: Bye!\n");
 }
 

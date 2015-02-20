@@ -1,12 +1,7 @@
-/*
- * The KErnel ROotKIt Detector (KEROKID)
- *
- *      (c) 2014 Fraunhofer FKIE
- */
+#ifndef KEROKID_INLINEHOOKS_H_
+#define KEROKID_INLINEHOOKS_H_
 
-#ifndef INLINEHOOKS_H_
-#define INLINEHOOKS_H_
-
+void init_inline_hook_check(void);
 void check_inline_hooks(psize **table);
 
-#endif /* INLINEHOOKS_H_ */
+#endif /* KEROKID_INLINEHOOKS_H_ */
