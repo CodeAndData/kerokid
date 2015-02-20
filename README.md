@@ -24,6 +24,7 @@ Kernel Level Rootkits use different techniques to hide themselves, e.g.:
 - unregister their /sys/module entry
 - overwrite their module structures
 - extract their code to the kernel heap (the space allocated with kmalloc or vmalloc)
+
 Nevertheless, these rootkits need space in memory. Therefore KEROKID uses memory forensics to detect rootkits in the kernel's heap or module space.
 In addition, rootkits must react to user or system activity and therefore use hooks or subscribe themselves to notifiers.
 KEROKID detects such suspicious calls originating from:
